@@ -30,7 +30,7 @@ def get_password_from_file():
         selected_password = random.choice(passwords).lower()  # 轉換為小寫
         
         print(f"學號: {STU_ID}")
-        # 密碼已隱藏，讓學生自行猜測
+        print(f"選擇的密碼: {selected_password}")
         
         return selected_password
     except FileNotFoundError:
@@ -287,11 +287,11 @@ if __name__ == '__main__':
     print("HTTP Basic Auth Server 已啟動")
     print("=" * 50)
     print(f"\n學號: {STU_ID}")
-    print("\n密碼已隱藏 - 請學生自行猜測密碼")
+    print(f"密碼: {ADMIN_PASSWORD}")
     print("\n可訪問的端點：")
     print("  http://localhost:3128/          - 受保護頁面（需要認證）")
     print("\n使用方式：")
-    print(f"  curl -u {STU_ID}:<密碼> http://localhost:3128/")
+    print(f"  curl -u {STU_ID}:{ADMIN_PASSWORD} http://localhost:3128/")
     print("=" * 50)
     print()
     
