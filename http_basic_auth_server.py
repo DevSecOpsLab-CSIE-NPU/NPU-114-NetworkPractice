@@ -13,8 +13,8 @@ import socket
 
 app = Flask(__name__)
 
-# 學號變數
-STU_ID = '1114405041'
+# 學號變數 - 從環境變數讀取，如果沒有則使用預設值
+STU_ID = os.environ.get('STU_ID', '1114405041')
 
 # 從 assets/password.txt 讀取密碼並根據學號隨機選擇
 def get_password_from_file():
