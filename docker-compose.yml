@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  http-basic-auth-server:
+    build:
+      context: .
+      args:
+        STU_ID: "1114405041"
+    container_name: http-basic-auth-server
+    ports:
+      - "3128:3128"
+    environment:
+      - STU_ID=1114405041
+    volumes:
+      - ./assets:/app/assets:ro
+    restart: unless-stopped

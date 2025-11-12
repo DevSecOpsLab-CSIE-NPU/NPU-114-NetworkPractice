@@ -1,0 +1,17 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+.git
+.gitignore
+.vscode
+.idea
+*.md
+http_basic_auth_client.py
+README_HTTP_BASIC_AUTH.md
