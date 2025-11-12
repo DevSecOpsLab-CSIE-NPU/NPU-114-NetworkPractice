@@ -5,12 +5,12 @@ services:
     build:
       context: .
       args:
-        STU_ID: "1114405041"
+        STU_ID: "${STU_ID:-CSIE-NPU}"
     container_name: http-basic-auth-server
     ports:
       - "3128:3128"
     environment:
-      - STU_ID=1114405041
+      - STU_ID=${STU_ID:-CSIE-NPU}
     volumes:
       - ./assets:/app/assets:ro
     restart: unless-stopped

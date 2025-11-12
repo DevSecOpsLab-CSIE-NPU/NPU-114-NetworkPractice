@@ -5,7 +5,7 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # 設定學號環境變數（可在 build 時覆蓋）
-ARG STU_ID=1114405041
+ARG STU_ID=CSIE-NPU
 ENV STU_ID=${STU_ID}
 
 # 複製 requirements.txt 並安裝依賴

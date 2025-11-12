@@ -14,7 +14,7 @@ import socket
 app = Flask(__name__)
 
 # 學號變數 - 從環境變數讀取，如果沒有則使用預設值
-STU_ID = os.environ.get('STU_ID', '1114405041')
+STU_ID = os.environ.get('STU_ID', 'CSIE-NPU')
 
 # 從 assets/password.txt 讀取密碼並根據學號隨機選擇
 def get_password_from_file():
@@ -26,7 +26,7 @@ def get_password_from_file():
             passwords = [line.strip() for line in f if line.strip()]
         
         # 使用學號作為隨機種子，確保每次執行選擇相同的密碼
-        random.seed(int(STU_ID))
+        random.seed(hash(STU_ID))
         selected_password = random.choice(passwords).lower()  # 轉換為小寫
         
         print(f"學號: {STU_ID}")

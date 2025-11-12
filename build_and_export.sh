@@ -10,7 +10,8 @@ NC='\033[0m' # No Color
 # 設定變數
 IMAGE_NAME="http-basic-auth-server"
 CONTAINER_NAME="http-auth-server"
-STU_ID="1114405041"
+# 從命令列參數讀取學號，如果沒有提供則使用預設值 "CSIE-NPU"
+STU_ID="${1:-CSIE-NPU}"
 EXPORT_FILE="http-basic-auth-server.tar"
 COMPRESSED_FILE="http-basic-auth-server.tar.bz2"
 ASSETS_DIR="./assets"
@@ -18,6 +19,13 @@ ASSETS_DIR="./assets"
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}Docker 容器建置與匯出腳本${NC}"
 echo -e "${BLUE}========================================${NC}"
+echo ""
+
+# 顯示使用的學號
+echo -e "${YELLOW}使用學號: ${STU_ID}${NC}"
+if [ "$STU_ID" = "CSIE-NPU" ]; then
+    echo -e "${YELLOW}提示: 可以使用 ./build_and_export.sh <學號> 來指定其他學號${NC}"
+fi
 echo ""
 
 # 檢查 Docker 是否已安裝

@@ -54,7 +54,7 @@ chmod +x build_and_export.sh
 **腳本執行步驟：**
 1. ✓ 清理舊的容器
 2. ✓ 清理舊的映像
-3. ✓ 建置 Docker 映像（傳入 STU_ID=1114405041）
+3. ✓ 建置 Docker 映像（傳入 STU_ID=CSIE-NPU）
 4. ✓ 啟動容器測試
 5. ✓ 匯出映像為 tar 檔案
 6. ✓ 使用 pbzip2 壓縮
@@ -107,7 +107,7 @@ docker logs http-auth-server
 
 ```bash
 # 1. 建置映像
-docker build --build-arg STU_ID=1114405041 -t http-basic-auth-server .
+docker build --build-arg STU_ID=CSIE-NPU -t http-basic-auth-server .
 
 # 2. 匯出映像
 docker save http-basic-auth-server -o http-basic-auth-server.tar
@@ -134,7 +134,7 @@ docker logs http-auth-server
 curl http://localhost:3128/
 
 # 使用認證測試（從日誌中取得密碼）
-curl -u 1114405041:<密碼> http://localhost:3128/
+curl -u CSIE-NPU:<密碼> http://localhost:3128/
 
 # 或在瀏覽器中開啟
 open http://localhost:3128/  # macOS
@@ -215,5 +215,5 @@ docker logs http-auth-server   # 查看學號和密碼
 docker ps                      # 查看運行狀態
 
 # 訪問服務
-curl -u 1114405041:<密碼> http://localhost:3128/
+curl -u CSIE-NPU:<密碼> http://localhost:3128/
 ```

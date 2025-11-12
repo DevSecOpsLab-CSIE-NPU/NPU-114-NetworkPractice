@@ -17,7 +17,7 @@
 docker build -t http-basic-auth-server .
 
 # 或使用自訂學號建置
-docker build --build-arg STU_ID=1114405041 -t http-basic-auth-server .
+docker build --build-arg STU_ID=CSIE-NPU -t http-basic-auth-server .
 ```
 
 #### 2. 執行容器
@@ -27,7 +27,7 @@ docker build --build-arg STU_ID=1114405041 -t http-basic-auth-server .
 docker run -d -p 3128:3128 --name http-auth-server http-basic-auth-server
 
 # 或使用環境變數覆蓋學號
-docker run -d -p 3128:3128 -e STU_ID=1114405041 --name http-auth-server http-basic-auth-server
+docker run -d -p 3128:3128 -e STU_ID=CSIE-NPU --name http-auth-server http-basic-auth-server
 
 # 如果需要掛載本地 assets 目錄（方便測試）
 docker run -d -p 3128:3128 -v $(pwd)/assets:/app/assets:ro --name http-auth-server http-basic-auth-server
