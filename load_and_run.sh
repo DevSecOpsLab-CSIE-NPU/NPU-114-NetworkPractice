@@ -97,6 +97,88 @@ else
     echo -e "${GREEN}  ✓ pbzip2 已安裝${NC}"
 fi
 
+# 檢查 uidmap 是否已安裝 (Podman rootless mode 所需)
+if ! command -v newuidmap &> /dev/null || ! command -v newgidmap &> /dev/null; then
+    echo -e "${YELLOW}  uidmap 未安裝,正在安裝 (Podman rootless mode 所需)...${NC}"
+    
+    # 檢測作業系統
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # Linux 系統
+        if command -v apt-get &> /dev/null; then
+            # Ubuntu/Debian
+            echo -e "${YELLOW}  使用 apt-get 安裝 uidmap...${NC}"
+            sudo apt-get update && sudo apt-get install -y uidmap
+        elif command -v yum &> /dev/null; then
+            # CentOS/RHEL
+            echo -e "${YELLOW}  使用 yum 安裝 shadow-utils...${NC}"
+            sudo yum install -y shadow-utils
+        else
+            echo -e "${RED}錯誤: 無法識別的 Linux 發行版${NC}"
+            echo -e "${YELLOW}請手動安裝 uidmap${NC}"
+            exit 1
+        fi
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS 不需要 uidmap
+        echo -e "${YELLOW}  macOS 不需要 uidmap${NC}"
+    else
+        echo -e "${RED}錯誤: 不支援的作業系統${NC}"
+        exit 1
+    fi
+    
+    # 再次檢查是否安裝成功 (僅在 Linux 上)
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        if command -v newuidmap &> /dev/null && command -v newgidmap &> /dev/null; then
+            echo -e "${GREEN}  ✓ uidmap 安裝成功${NC}"
+        else
+            echo -e "${RED}  ✗ uidmap 安裝失敗${NC}"
+            exit 1
+        fi
+    fi
+else
+    echo -e "${GREEN}  ✓ uidmap 已安裝${NC}"
+fi
+
+# 檢查 slirp4netns 是否已安裝 (Podman 網路配置所需)
+if ! command -v slirp4netns &> /dev/null; then
+    echo -e "${YELLOW}  slirp4netns 未安裝,正在安裝 (Podman 網路配置所需)...${NC}"
+    
+    # 檢測作業系統
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # Linux 系統
+        if command -v apt-get &> /dev/null; then
+            # Ubuntu/Debian
+            echo -e "${YELLOW}  使用 apt-get 安裝 slirp4netns...${NC}"
+            sudo apt-get update && sudo apt-get install -y slirp4netns
+        elif command -v yum &> /dev/null; then
+            # CentOS/RHEL
+            echo -e "${YELLOW}  使用 yum 安裝 slirp4netns...${NC}"
+            sudo yum install -y slirp4netns
+        else
+            echo -e "${RED}錯誤: 無法識別的 Linux 發行版${NC}"
+            echo -e "${YELLOW}請手動安裝 slirp4netns${NC}"
+            exit 1
+        fi
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS 不需要 slirp4netns
+        echo -e "${YELLOW}  macOS 不需要 slirp4netns${NC}"
+    else
+        echo -e "${RED}錯誤: 不支援的作業系統${NC}"
+        exit 1
+    fi
+    
+    # 再次檢查是否安裝成功 (僅在 Linux 上)
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        if command -v slirp4netns &> /dev/null; then
+            echo -e "${GREEN}  ✓ slirp4netns 安裝成功${NC}"
+        else
+            echo -e "${RED}  ✗ slirp4netns 安裝失敗${NC}"
+            exit 1
+        fi
+    fi
+else
+    echo -e "${GREEN}  ✓ slirp4netns 已安裝${NC}"
+fi
+
 # 檢查 podman 是否已安裝
 if ! command -v podman &> /dev/null; then
     echo -e "${YELLOW}  podman 未安裝,正在安裝...${NC}"

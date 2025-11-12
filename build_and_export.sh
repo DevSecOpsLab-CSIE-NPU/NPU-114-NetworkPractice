@@ -17,7 +17,7 @@ COMPRESSED_FILE="http-basic-auth-server.tar.bz2"
 ASSETS_DIR="./assets"
 
 echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}Docker 容器建置與匯出腳本${NC}"
+echo -e "${BLUE}Podman 容器建置與匯出腳本${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 
@@ -28,10 +28,49 @@ if [ "$STU_ID" = "CSIE-NPU" ]; then
 fi
 echo ""
 
-# 檢查 Docker 是否已安裝
-if ! command -v docker &> /dev/null; then
-    echo -e "${RED}錯誤: Docker 未安裝！${NC}"
+# 檢查 Podman 是否已安裝
+if ! command -v podman &> /dev/null; then
+    echo -e "${RED}錯誤: Podman 未安裝！${NC}"
     exit 1
+fi
+
+# 檢查 Podman rootless mode 所需的依賴
+echo -e "${YELLOW}檢查 Podman rootless mode 依賴...${NC}"
+
+# 檢查 uidmap
+if ! command -v newuidmap &> /dev/null || ! command -v newgidmap &> /dev/null; then
+    echo -e "${YELLOW}  uidmap 未安裝，正在安裝 (Podman rootless mode 所需)...${NC}"
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y uidmap
+        elif command -v yum &> /dev/null; then
+            sudo yum install -y shadow-utils
+        else
+            echo -e "${RED}錯誤: 無法自動安裝 uidmap${NC}"
+            exit 1
+        fi
+    fi
+    echo -e "${GREEN}  ✓ uidmap 安裝成功${NC}"
+else
+    echo -e "${GREEN}  ✓ uidmap 已安裝${NC}"
+fi
+
+# 檢查 slirp4netns
+if ! command -v slirp4netns &> /dev/null; then
+    echo -e "${YELLOW}  slirp4netns 未安裝，正在安裝 (Podman 網路配置所需)...${NC}"
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y slirp4netns
+        elif command -v yum &> /dev/null; then
+            sudo yum install -y slirp4netns
+        else
+            echo -e "${RED}錯誤: 無法自動安裝 slirp4netns${NC}"
+            exit 1
+        fi
+    fi
+    echo -e "${GREEN}  ✓ slirp4netns 安裝成功${NC}"
+else
+    echo -e "${GREEN}  ✓ slirp4netns 已安裝${NC}"
 fi
 
 # 檢查 pbzip2 是否已安裝
@@ -57,6 +96,9 @@ if ! command -v pbzip2 &> /dev/null; then
             exit 1
         fi
     fi
+    echo -e "${GREEN}  ✓ pbzip2 安裝成功${NC}"
+else
+    echo -e "${GREEN}  ✓ pbzip2 已安裝${NC}"
 fi
 
 # 建立 assets 目錄
@@ -67,24 +109,24 @@ fi
 
 # 步驟 1: 停止並移除舊的容器（如果存在）
 echo -e "${YELLOW}[1/6] 清理舊的容器...${NC}"
-if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+if podman ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
     echo "  停止容器 ${CONTAINER_NAME}..."
-    docker stop "$CONTAINER_NAME" 2>/dev/null || true
+    podman stop "$CONTAINER_NAME" 2>/dev/null || true
     echo "  移除容器 ${CONTAINER_NAME}..."
-    docker rm "$CONTAINER_NAME" 2>/dev/null || true
+    podman rm "$CONTAINER_NAME" 2>/dev/null || true
 fi
 
 # 步驟 2: 移除舊的映像（如果存在）
 echo -e "${YELLOW}[2/6] 清理舊的映像...${NC}"
-if docker images --format '{{.Repository}}' | grep -q "^${IMAGE_NAME}$"; then
+if podman images --format '{{.Repository}}' | grep -q "^${IMAGE_NAME}$"; then
     echo "  移除映像 ${IMAGE_NAME}..."
-    docker rmi "$IMAGE_NAME" 2>/dev/null || true
+    podman rmi "$IMAGE_NAME" 2>/dev/null || true
 fi
 
-# 步驟 3: 建置 Docker 映像
-echo -e "${YELLOW}[3/6] 建置 Docker 映像...${NC}"
+# 步驟 3: 建置 Podman 映像
+echo -e "${YELLOW}[3/6] 建置 Podman 映像...${NC}"
 echo "  使用學號: ${STU_ID}"
-if docker build --build-arg STU_ID="$STU_ID" -t "$IMAGE_NAME" .; then
+if podman build --build-arg STU_ID="$STU_ID" -t "$IMAGE_NAME" .; then
     echo -e "${GREEN}  ✓ 映像建置成功${NC}"
 else
     echo -e "${RED}  ✗ 映像建置失敗${NC}"
@@ -93,27 +135,27 @@ fi
 
 # 步驟 4: 啟動容器（測試）
 echo -e "${YELLOW}[4/6] 啟動容器進行測試...${NC}"
-if docker run -d -p 3128:3128 --name "$CONTAINER_NAME" "$IMAGE_NAME"; then
+if podman run -d -p 3128:3128 --name "$CONTAINER_NAME" "$IMAGE_NAME"; then
     echo -e "${GREEN}  ✓ 容器啟動成功${NC}"
     echo "  等待容器初始化..."
     sleep 3
     
     # 顯示容器日誌
     echo -e "${BLUE}  容器日誌:${NC}"
-    docker logs "$CONTAINER_NAME" 2>&1 | head -n 20
+    podman logs "$CONTAINER_NAME" 2>&1 | head -n 20
     
     # 停止容器
     echo "  停止測試容器..."
-    docker stop "$CONTAINER_NAME" > /dev/null
+    podman stop "$CONTAINER_NAME" > /dev/null
 else
     echo -e "${RED}  ✗ 容器啟動失敗${NC}"
     exit 1
 fi
 
-# 步驟 5: 匯出 Docker 映像
-echo -e "${YELLOW}[5/6] 匯出 Docker 映像...${NC}"
+# 步驟 5: 匯出 Podman 映像
+echo -e "${YELLOW}[5/6] 匯出 Podman 映像...${NC}"
 echo "  匯出映像到 ${EXPORT_FILE}..."
-if docker save "$IMAGE_NAME" -o "$EXPORT_FILE"; then
+if podman save "$IMAGE_NAME" -o "$EXPORT_FILE"; then
     echo -e "${GREEN}  ✓ 映像匯出成功${NC}"
     EXPORT_SIZE=$(du -h "$EXPORT_FILE" | cut -f1)
     echo "  檔案大小: ${EXPORT_SIZE}"
@@ -141,7 +183,7 @@ fi
 
 # 清理測試容器
 echo -e "${YELLOW}清理測試容器...${NC}"
-docker rm "$CONTAINER_NAME" > /dev/null 2>&1 || true
+podman rm "$CONTAINER_NAME" > /dev/null 2>&1 || true
 
 echo ""
 echo -e "${GREEN}========================================${NC}"
@@ -156,6 +198,6 @@ echo "  壓縮檔案大小: ${COMPRESSED_SIZE}"
 echo ""
 echo -e "${BLUE}如何使用壓縮檔案:${NC}"
 echo "  1. 解壓縮: pbzip2 -d -k ${ASSETS_DIR}/${COMPRESSED_FILE}"
-echo "  2. 載入映像: docker load -i ${ASSETS_DIR}/${EXPORT_FILE}"
-echo "  3. 執行容器: docker run -d -p 3128:3128 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
+echo "  2. 載入映像: podman load -i ${ASSETS_DIR}/${EXPORT_FILE}"
+echo "  3. 執行容器: podman run -d -p 3128:3128 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
 echo ""
