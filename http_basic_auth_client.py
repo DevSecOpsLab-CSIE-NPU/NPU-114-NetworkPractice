@@ -58,7 +58,7 @@ def test_with_correct_auth():
     response = requests.get(url, auth=HTTPBasicAuth(STU_ID, ADMIN_PASSWORD))
     
     print(f"使用帳號: {STU_ID}")
-    print(f"使用密碼: {ADMIN_PASSWORD}")
+    print(f"使用密碼: [已隱藏]")
     print(f"狀態碼: {response.status_code}")
     if response.status_code == 200:
         print(f"回應內容類型: {response.headers.get('Content-Type')}")
@@ -88,8 +88,8 @@ def test_with_manual_header():
     response = requests.get(url, headers=headers)
     
     print(f"使用帳號: {STU_ID}")
-    print(f"使用密碼: {ADMIN_PASSWORD}")
-    print(f"Authorization Header: Basic {credentials}")
+    print(f"使用密碼: [已隱藏]")
+    print(f"Authorization Header: Basic [已隱藏]")
     print(f"狀態碼: {response.status_code}")
     if response.status_code == 200:
         print(f"回應內容類型: {response.headers.get('Content-Type')}")
@@ -124,7 +124,7 @@ def main():
     print("=" * 50)
     print(f"\n學號: {STU_ID}")
     print(f"帳號: {STU_ID}")
-    print(f"密碼: {ADMIN_PASSWORD}")
+    print(f"密碼: [已隱藏 - 請自行猜測]")
     
     try:
         # 測試各種情況

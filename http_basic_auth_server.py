@@ -30,7 +30,7 @@ def get_password_from_file():
         selected_password = random.choice(passwords).lower()  # 轉換為小寫
         
         print(f"學號: {STU_ID}")
-        print(f"選擇的密碼: {selected_password}")
+        # 密碼已隱藏，讓學生自行猜測
         
         return selected_password
     except FileNotFoundError:
@@ -207,12 +207,7 @@ HTML_TEMPLATE = """
             </div>
             
             <div class="info-item">
-                <div class="info-label">🔑 選擇的密碼 (Password)</div>
-                <div class="info-value">{{ password }}</div>
-            </div>
-            
-            <div class="info-item">
-                <div class="info-label">🖥️ 主機 IP (Host IP)</div>
+                <div class="info-label">️ 主機 IP (Host IP)</div>
                 <div class="info-value">{{ host_ip }}</div>
             </div>
             
@@ -281,7 +276,6 @@ def home():
         HTML_TEMPLATE,
         username=username,
         student_id=STU_ID,
-        password=ADMIN_PASSWORD,
         host_ip=host_ip,
         request_ip=request_ip,
         timestamp=timestamp
@@ -293,13 +287,11 @@ if __name__ == '__main__':
     print("HTTP Basic Auth Server 已啟動")
     print("=" * 50)
     print(f"\n學號: {STU_ID}")
-    print("\n測試帳號：")
-    for username, password in USERS.items():
-        print(f"  用戶名: {username}, 密碼: {password}")
+    print("\n密碼已隱藏 - 請學生自行猜測密碼")
     print("\n可訪問的端點：")
     print("  http://localhost:3128/          - 受保護頁面（需要認證）")
     print("\n使用方式：")
-    print(f"  curl -u {STU_ID}:{ADMIN_PASSWORD} http://localhost:3128/")
+    print(f"  curl -u {STU_ID}:<密碼> http://localhost:3128/")
     print("=" * 50)
     print()
     
