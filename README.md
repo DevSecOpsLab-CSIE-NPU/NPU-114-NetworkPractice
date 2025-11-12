@@ -1,2 +1,2 @@
 # NPU-114-NetworkPractice
-network practice class materials
+網路實習課程教材
