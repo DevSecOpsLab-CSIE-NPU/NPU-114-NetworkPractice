@@ -64,7 +64,7 @@ HTML_TEMPLATE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114 電腦網路實作 - 期中考</title>
+    <title>114 電腦網路實習 - 期中考</title>
     <style>
         * {
             margin: 0;
@@ -193,7 +193,7 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <div class="container">
-        <h1>🎓 114 電腦網路實作 - 期中考</h1>
+        <h1>🎓 114 電腦網路實習 - 期中考</h1>
         <div class="subtitle">HTTP Basic Authentication 實作</div>
         
         <div class="success-badge">
